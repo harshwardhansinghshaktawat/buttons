@@ -17,16 +17,25 @@ class Button1Element extends HTMLElement {
     }
 
     connectedCallback() {
-        this.style.display = 'inline-block';
+        this.style.cssText = `
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        `;
         this.innerHTML = `
-            <a href="${this.settings.linkUrl}" class="btn btn-1" target="${this.settings.target}" rel="${this.settings.relValue}">
-                <svg>
-                    <rect x="0" y="0" fill="none" width="100%" height="100%"/>
-                </svg>
-                ${this.settings.buttonText}
-            </a>
+            <div class="button-container">
+                <a href="${this.settings.linkUrl}" class="btn btn-1" target="${this.settings.target}" rel="${this.settings.relValue}">
+                    <svg>
+                        <rect x="0" y="0" fill="none" width="100%" height="100%"/>
+                    </svg>
+                    ${this.settings.buttonText}
+                </a>
+            </div>
         `;
         this.applyStyles();
+        this.setupLinkHandler();
     }
 
     static get observedAttributes() {
@@ -44,13 +53,19 @@ class Button1Element extends HTMLElement {
         const style = document.createElement('style');
         style.textContent = `
             @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;900&display=swap');
+            .button-container {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                display: inline-block;
+            }
             .btn {
                 color: #fff;
                 cursor: pointer;
                 font-size: 16px;
                 font-weight: 400;
                 line-height: 45px;
-                margin: 0 0 2em;
                 max-width: 160px;
                 position: relative;
                 text-decoration: none;
@@ -100,16 +115,31 @@ class Button1Element extends HTMLElement {
         this.appendChild(style);
     }
 
+    setupLinkHandler() {
+        const link = this.querySelector('a');
+        if (link) {
+            link.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent default to control behavior
+                const url = this.settings.linkUrl;
+                const target = this.settings.target;
+                window.open(url, target);
+            });
+        }
+    }
+
     updateButton() {
         this.innerHTML = `
-            <a href="${this.settings.linkUrl}" class="btn btn-1" target="${this.settings.target}" rel="${this.settings.relValue}">
-                <svg>
-                    <rect x="0" y="0" fill="none" width="100%" height="100%"/>
-                </svg>
-                ${this.settings.buttonText}
-            </a>
+            <div class="button-container">
+                <a href="${this.settings.linkUrl}" class="btn btn-1" target="${this.settings.target}" rel="${this.settings.relValue}">
+                    <svg>
+                        <rect x="0" y="0" fill="none" width="100%" height="100%"/>
+                    </svg>
+                    ${this.settings.buttonText}
+                </a>
+            </div>
         `;
         this.applyStyles();
+        this.setupLinkHandler();
     }
 }
 
